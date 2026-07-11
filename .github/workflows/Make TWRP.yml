@@ -8,28 +8,6 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-    - name: Remove Useless Package
-      run: |
-        docker rmi $(docker images -q) 2>/dev/null || true
-        sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/sudo apt/sources.list.d
-        sudo apt -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* mysql* php* 2>/dev/null || true
-        sudo apt -y autoremove --purge 2>/dev/null || true
-        sudo apt -y autoclean 2>/dev/null || true
-        sudo apt clean 2>/dev/null || true
-
-    - name: Free Disk Space Before Build
-      run: |
-        echo "Disk space before cleanup:"
-        df -h
-        sudo rm -rf /usr/local/.ghcup
-        sudo rm -rf /opt/hostedtoolcache/CodeQL
-        sudo rm -rf /usr/local/lib/android/sdk/ndk
-        sudo rm -rf /usr/share/dotnet
-        sudo rm -rf /opt/ghc
-        sudo rm -rf /usr/local/share/boost
-        echo "Disk space after cleanup:"
-        df -h
-
     - name: Maximize Build Space
       uses: easimon/maximize-build-space@master
       with:
@@ -41,51 +19,45 @@ jobs:
         remove-codeql: 'true'
         remove-docker-images: 'true'
 
-    - name: Check Out
-      uses: actions/checkout@main
-
-    - name: Set Variables
-      run: echo "{name}=date::$(date +%F)" >> $GITHUB_OUTPUT
-
-    - name: Prepare Environment
+    - name: Install dependencies
       run: |
-        df -h
-        export HOME=${GITHUB_WORKSPACE}
-        cd ${GITHUB_WORKSPACE}
-        sudo apt -y install git aria2
-        git clone https://gitlab.com/OrangeFox/misc/scripts
-        df -h
-        cd scripts
-        sudo bash setup/android_build_env.sh
-        df -h
-        sudo bash setup/install_android_sdk.sh || true
+        sudo apt-get update
+        sudo apt-get install -y bc bison build-essential ccache curl flex g++-multilib gcc-multilib git git-core gnupg gperf imagemagick lib32ncurses5-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses5 libncurses5-dev libsdl1.2-dev libssl-dev libwxgtk3.0-gtk3-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev openjdk-17-jdk python3 python3-pip
 
-    - name: Init Repo
+    - name: Install repo
       run: |
-        mkdir ${GITHUB_WORKSPACE}/workspace
-        cd ${GITHUB_WORKSPACE}/workspace
+        mkdir -p ~/bin
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+        chmod a+x ~/bin/repo
+        sudo ln -sf ~/bin/repo /usr/bin/repo
+
+    - name: Init repo
+      run: |
+        mkdir workspace
+        cd workspace
         git config --global user.name "Build-Bot"
         git config --global user.email "build@ci.local"
         repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-14.1
 
-    - name: Repo Sync
+    - name: Repo sync
       run: |
-        cd ${GITHUB_WORKSPACE}/workspace
-        repo sync -j$(nproc --all) --force-sync
+        cd workspace
+        repo sync -j$(nproc --all) --force-sync --no-tags --no-clone-bundle 2>&1 || repo sync -j$(nproc --all) --force-sync --no-tags --no-clone-bundle 2>&1 || true
 
-    - name: Clone Device Tree
+    - name: Clone device tree
       run: |
-        cd ${GITHUB_WORKSPACE}/workspace
+        cd workspace
         git clone https://github.com/${{ github.repository }}.git -b main ./device/xiaomi/lapis
 
-    - name: Building
+    - name: Build
       run: |
-        cd ${GITHUB_WORKSPACE}/workspace
+        cd workspace
         source build/envsetup.sh
+        export ALLOW_MISSING_DEPENDENCIES=true
         lunch twrp_lapis-eng
         mka vendorbootimage -j$(nproc --all)
 
-    - name: Upload Artifact
+    - name: Upload artifact
       uses: actions/upload-artifact@v4
       if: always()
       with:
