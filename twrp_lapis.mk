@@ -34,7 +34,7 @@ $(call inherit-product, device/xiaomi/lapis/device.mk)
 
 # Device identifier
 PRODUCT_DEVICE := lapis
-PRODUCT_NAME := twrp_lapis
+PRODUCT_NAME := twrp_lapis-eng
 PRODUCT_BRAND := Redmi
 PRODUCT_MODEL := 2504FPN6BC
 PRODUCT_MANUFACTURER := Xiaomi
