@@ -9,8 +9,7 @@ jobs:
 
     steps:
     - name: Maximize Build Space
-  uses: easimon/maximize-build-space@master
-  with:
+       uses: easimon/maximize-build-space@master
     root-reserve-mb: 1024
     swap-size-mb: 16384
     remove-dotnet: 'true'
@@ -18,7 +17,7 @@ jobs:
     remove-haskell: 'true'
     remove-codeql: 'true'
     - name: Cleanup extra files
-  run: |
+       run: |
     sudo rm -rf /usr/local/lib/android
     sudo rm -rf /usr/share/dotnet
     sudo rm -rf /opt/ghc
