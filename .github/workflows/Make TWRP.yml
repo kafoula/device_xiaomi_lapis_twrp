@@ -42,7 +42,7 @@ jobs:
     - name: Repo sync
       run: |
         cd workspace
-        repo sync -j$(nproc --all) --force-sync --no-tags --no-clone-bundle 2>&1 || repo sync -j$(nproc --all) --force-sync --no-tags --no-clone-bundle 2>&1 
+        repo sync -j$(nproc --all) --force-sync --no-tags --no-clone-bundle 2>&1 || repo sync -j$(nproc --all) --force-sync --no-tags --no-clone-bundle 2>&1 ||
 
     - name: Clone device tree
       run: |
