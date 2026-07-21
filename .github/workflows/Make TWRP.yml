@@ -2,10 +2,9 @@ name: Make TWRP
 
 on:
   workflow_dispatch: 
-
-jobs:
-  build:
-    runs-on: ubuntu-22.04
+ jobs:
+    build:
+      runs-on: ubuntu-22.04
 
     steps:
     - name: Maximize Build Space
