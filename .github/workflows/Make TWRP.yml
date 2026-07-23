@@ -93,7 +93,7 @@ jobs:
 
           lunch twrp_lapis-eng
 
-          mka vendorbootimage -j$(nproc --all)
+          mka vendorbootimage -j1$(nproc --all)
 
       - name: Upload vendor_boot image
         uses: actions/upload-artifact@v4
