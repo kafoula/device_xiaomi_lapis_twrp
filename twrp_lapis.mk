@@ -36,7 +36,7 @@ $(call inherit-product, device/xiaomi/lapis/device.mk)
 PRODUCT_DEVICE := lapis
 PRODUCT_NAME := twrp_lapis-eng
 PRODUCT_BRAND := Redmi
-PRODUCT_MODEL := 2504FPN6BC
+PRODUCT_MODEL := 25080RABDG
 PRODUCT_MANUFACTURER := Xiaomi
 
 # Hide Reflash TWRP
