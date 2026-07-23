@@ -91,7 +91,7 @@ jobs:
 
           export ALLOW_MISSING_DEPENDENCIES=true
 
-          lunch twrp_lapis-eng
+          lunch twrp_lapis
 
           mka vendorbootimage -j1$(nproc --all)
 
